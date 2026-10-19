@@ -1,0 +1,23 @@
+node_modules/
+dist/
+
+# Android build output & local config
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/capacitor-cordova-android-plugins/build/
+android/.idea/
+*.iml
+
+# Secrets — JANGAN di-commit
+*.jks
+*.keystore
+keystore.properties
+google-services.json
+*-service-account*.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/

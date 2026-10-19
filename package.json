@@ -1,0 +1,32 @@
+{
+    "name": "mindfora-webapps",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "description": "Mindfora Android app (Capacitor WebView shell for https://mindfora.id)",
+    "scripts": {
+        "build": "vite build --mode production",
+        "build:dev": "vite build --mode development",
+        "sync": "npm run build && cross-env MINDFORA_ENV=production cap sync android",
+        "sync:dev": "npm run build:dev && cross-env MINDFORA_ENV=development cap sync android",
+        "apk:debug": "npm run sync && cd android && gradlew.bat assembleDebug",
+        "apk:debug:dev": "npm run sync:dev && cd android && gradlew.bat assembleDebug",
+        "open": "cap open android"
+    },
+    "engines": {
+        "node": ">=22"
+    },
+    "dependencies": {
+        "@capacitor/android": "8.5.3",
+        "@capacitor/core": "8.5.3"
+    },
+    "devDependencies": {
+        "@capacitor/cli": "8.5.3",
+        "autoprefixer": "10.4.22",
+        "cross-env": "10.1.0",
+        "postcss": "8.5.6",
+        "tailwindcss": "3.4.18",
+        "typescript": "5.9.3",
+        "vite": "7.2.6"
+    }
+}

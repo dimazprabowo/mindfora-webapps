@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Mindfora</string>
+    <string name="title_activity_main">Mindfora</string>
+    <string name="package_name">id.mindfora.app</string>
+    <string name="custom_url_scheme">id.mindfora.app</string>
+</resources>

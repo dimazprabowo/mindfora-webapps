@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html,
+    body {
+        @apply h-full select-none antialiased;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+}
+
+@layer components {
+    .breathe {
+        animation: breathe 4s ease-in-out infinite;
+    }
+
+    .ripple {
+        animation: ripple 4s ease-out infinite;
+    }
+}
+
+@keyframes breathe {
+    0%,
+    100% {
+        transform: scale(0.92);
+    }
+    50% {
+        transform: scale(1.04);
+    }
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.55;
+    }
+    100% {
+        transform: scale(1.9);
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .breathe,
+    .ripple {
+        animation: none;
+    }
+}
