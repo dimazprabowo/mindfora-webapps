@@ -1,7 +1,14 @@
 package id.mindfora.app;
 
+import android.app.DownloadManager;
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.webkit.CookieManager;
+import android.webkit.URLUtil;
 import android.webkit.WebView;
+import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.WebViewListener;
@@ -20,6 +27,7 @@ public class MainActivity extends BridgeActivity {
         EdgeToEdge.enable(this);
 
         if (bridge == null) return;
+        initDownloadListener();
         // Keep the animated splash until the first page (remote web or offline.html) is painted.
         // SplashScreen.launchShowDuration in capacitor.config.ts is only the upper bound.
         bridge.addWebViewListener(
@@ -32,5 +40,36 @@ public class MainActivity extends BridgeActivity {
                 }
             }
         );
+    }
+
+    /**
+     * Android WebView has no built-in download handler: responses with
+     * Content-Disposition: attachment silently fail (Capacitor then shows errorPath).
+     * Forward them to DownloadManager with the WebView session cookies so
+     * auth-protected routes (training.download, exports) still work.
+     */
+    private void initDownloadListener() {
+        bridge.getWebView().setDownloadListener((url, userAgent, contentDisposition, mimeType, contentLength) -> {
+            try {
+                if (url.startsWith("blob:")) return; // blob downloads need the JS-side Filesystem bridge
+                String fileName = URLUtil.guessFileName(url, contentDisposition, mimeType);
+                DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+                request.setMimeType(mimeType);
+                request.setTitle(fileName);
+                request.setDescription(getString(R.string.app_name));
+                String cookies = CookieManager.getInstance().getCookie(url);
+                if (cookies != null) request.addRequestHeader("Cookie", cookies);
+                request.addRequestHeader("User-Agent", userAgent);
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
+                DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+                if (dm != null) {
+                    dm.enqueue(request);
+                    Toast.makeText(this, "Mengunduh " + fileName, Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                Toast.makeText(this, "Unduhan gagal dimulai", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
