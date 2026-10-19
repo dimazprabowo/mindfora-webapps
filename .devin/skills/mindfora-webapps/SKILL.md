@@ -6,7 +6,7 @@ description: Workflow agent untuk membangun & memelihara aplikasi Android (Capac
 # Mindfora Android App (Capacitor WebView)
 
 ## Konteks
-- Backend/web: `D:\PROJECT\FREELANCE\mindfora` (Laravel 12 + Livewire 4). Perubahan di sana WAJIB ikut skill `mindfulness-app` (Service/Policy/Permission/komponen Blade, dsb.).
+- Backend/web: `D:\PROJECT\FREELANCE\mindfora` (Laravel 12 + Livewire 4). Perubahan di sana WAJIB ikut skill `mindfora` (Service/Policy/Permission/komponen Blade, dsb.).
 - App Android: `D:\PROJECT\FREELANCE\mindfora-webapps` (repo terpisah).
 - Target: **Android saja** (APK untuk testing, AAB untuk Play Store).
 - Stack: **Capacitor (versi stable terbaru, rilis >= 7 hari)** + Vite + TailwindCSS untuk halaman shell lokal (offline/error). Dipilih karena bisa di-improve bertahap (plugin native, custom Java/Kotlin di MainActivity) tanpa ganti stack, dan siap iOS kalau nanti dibutuhkan.
@@ -53,7 +53,7 @@ description: Workflow agent untuk membangun & memelihara aplikasi Android (Capac
 
 ### Fase 3 — Push Notification (FCM)
 - Prasyarat dari user: project Firebase, `google-services.json`, service account (backend). Paket composer baru WAJIB dikonfirmasi user dulu.
-- Backend (ikut skill `mindfulness-app`): tabel `device_tokens` (user_id, token unik, platform, last_seen_at), Service registrasi/hapus token, registrasi token lewat **komponen Livewire tanpa UI** di app layout (bukan controller baru), hapus token saat logout, kirim push lewat channel Notification Laravel yang sudah ada (via queue). Token invalid dari FCM dibersihkan otomatis.
+- Backend (ikut skill `mindfora`): tabel `device_tokens` (user_id, token unik, platform, last_seen_at), Service registrasi/hapus token, registrasi token lewat **komponen Livewire tanpa UI** di app layout (bukan controller baru), hapus token saat logout, kirim push lewat channel Notification Laravel yang sudah ada (via queue). Token invalid dari FCM dibersihkan otomatis.
 - App: `@capacitor/push-notifications`, izin `POST_NOTIFICATIONS` (Android 13+) diminta dengan konteks (setelah login, bukan saat app pertama dibuka), notification channel, tap notifikasi -> buka URL tujuan (deep link di dalam WebView).
 - Event yang memicu push: notifikasi sistem yang sudah ada + pesan konsultasi/chat baru + test minggu berikutnya terbuka (konfirmasi daftar finalnya dengan user).
 - DoD: push diterima saat app foreground/background/tertutup; tap membuka halaman yang benar; token tidak dobel per device.
@@ -80,7 +80,7 @@ description: Workflow agent untuk membangun & memelihara aplikasi Android (Capac
 ## Definition of Done (lampirkan di setiap akhir fase)
 - [ ] URL dari env, tidak ada yang di-hardcode; HTTPS di production
 - [ ] Build debug sukses; tidak ada secret yang ter-commit
-- [ ] Perubahan Laravel ikut skill `mindfulness-app` (Service/Policy/komponen/Pint/test)
+- [ ] Perubahan Laravel ikut skill `mindfora` (Service/Policy/komponen/Pint/test)
 - [ ] Native bridge cuma di `resources/js/native-bridge.js`; deteksi app cuma lewat `is_native_app()`
 - [ ] Safe-area & dark mode benar di HP fisik
 - [ ] Edit manual di `android/` tercatat di `AGENTS.md`

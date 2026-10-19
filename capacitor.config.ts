@@ -39,7 +39,8 @@ const config: CapacitorConfig = {
     },
     plugins: {
         SplashScreen: {
-            launchShowDuration: 1200,
+            // Upper bound only: MainActivity hides the splash as soon as the first page is painted.
+            launchShowDuration: 8000,
             launchFadeOutDuration: 300,
             showSpinner: false,
         },

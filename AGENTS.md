@@ -82,6 +82,8 @@ Install langsung ke HP via USB (USB debugging aktif):
 | `SDK location not found` | `ANDROID_HOME` belum terbaca | Buka ulang terminal; atau buat `android\local.properties` berisi `sdk.dir=C\:\\Users\\<user>\\AppData\\Local\\Android\\Sdk` |
 | `Unsupported class file major version` / Gradle error Java | JDK bukan 21 | Set `JAVA_HOME` ke JDK 21, buka ulang terminal |
 | Halaman http tidak terbuka di build prod | Cleartext diblokir (benar) | Production wajib https; untuk lokal pakai `npm run apk:debug:dev` |
+| Strip abu/hijau di atas & bawah layar, keyboard menyisakan blok kosong | Server belum punya `viewport-fit=cover` (perubahan Laravel belum di-deploy) -> Capacitor fallback mem-padding WebView | Deploy repo `mindfora` ke server; cek: `view-source` halaman login harus berisi `viewport-fit=cover` & `class="native-app"` |
+| `gradlew` error `JAVA_HOME is not set` | Terminal dibuka sebelum env di-set | Buka ulang terminal (env user sudah ada) |
 
 ## 8. Edit Manual di Folder `android/`
 
@@ -89,8 +91,10 @@ Folder `android/` di-generate oleh `npx cap add android`, tapi DI-COMMIT. Setiap
 
 | File | Perubahan | Alasan |
 |------|-----------|--------|
-| `app/src/main/java/id/mindfora/app/MainActivity.java` | `EdgeToEdge.enable(this)` sebelum `super.onCreate` | Layout edge-to-edge konsisten di semua versi Android; web mengatur inset via `env(safe-area-inset-*)` |
-| `app/src/main/res/values/styles.xml` | `windowSplashScreenBackground` + `windowSplashScreenAnimatedIcon` di `AppTheme.NoActionBarLaunch` | Splash Android 12+ bertema brand |
+| `app/src/main/java/id/mindfora/app/MainActivity.java` | `EdgeToEdge.enable(this)` **sesudah** `super.onCreate` | Layout edge-to-edge konsisten di semua versi Android; web mengatur inset via `env(safe-area-inset-*)`. JANGAN dipindah ke sebelum `super.onCreate`: decor view jadi terbuat dengan tema launch -> muncul title bar "Mindfora" bergambar splash di atas web |
+| `app/src/main/java/id/mindfora/app/MainActivity.java` | `WebViewListener.onPageCommitVisible` -> `SplashScreen.hide()` (sekali) | Splash animasi tampil sampai halaman pertama (web / `offline.html`) benar-benar ter-render; `launchShowDuration` (8 dtk) cuma batas atas |
+| `app/src/main/res/values/styles.xml` | `windowSplashScreenBackground` + `windowSplashScreenAnimatedIcon=@drawable/splash_icon` + `windowSplashScreenAnimationDuration` di `AppTheme.NoActionBarLaunch` | Splash Android 12+ bertema brand dengan ikon animasi |
+| `app/src/main/res/values/styles.xml` | `android:windowBackground=@color/splash_background` di `AppTheme.NoActionBar` | Area di belakang WebView (mis. saat Capacitor mem-padding status/nav bar karena WebView < 140) berwarna brand, bukan abu-abu |
 | `app/src/main/res/values/colors.xml`, `values-night/colors.xml` | Warna `splash_background` (primary-600 / primary-950) | Splash terang & gelap |
 | `app/src/main/res/drawable/*`, `mipmap-*/*` | **GENERATED** oleh `npm run assets` — jangan edit manual | Ikon adaptif + themed icon, splash, PNG legacy |
 | _(dihapus)_ `drawable-v24/`, `drawable-land-*/`, `drawable-port-*/`, `mipmap-*/ic_launcher_foreground.png`, `values/ic_launcher_background.xml` | Aset default Capacitor | Diganti aset brand hasil generator |
@@ -99,7 +103,7 @@ Folder `android/` di-generate oleh `npx cap add android`, tapi DI-COMMIT. Setiap
 
 Sumber tunggal: path logo lotus + warna brand di `scripts/generate-assets.mjs` (sama dengan `public/favicon.svg` & `tailwind.config.js` Laravel).
 ```powershell
-npm run assets   # tulis ulang ikon adaptif/monochrome, splash, PNG legacy, assets/play-store-icon.png, src/logo.svg
+npm run assets   # tulis ulang ikon adaptif/monochrome, splash (+ splash_icon.xml animasi), PNG legacy, assets/play-store-icon.png, src/logo.svg
 npm run apk:debug
 ```
 
