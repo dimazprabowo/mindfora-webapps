@@ -37,6 +37,17 @@ const config: CapacitorConfig = {
         allowMixedContent: isDev,
         webContentsDebuggingEnabled: isDev,
     },
+    plugins: {
+        SplashScreen: {
+            launchShowDuration: 1200,
+            launchFadeOutDuration: 300,
+            showSpinner: false,
+        },
+        SystemBars: {
+            // Edge-to-edge: the web layout pads itself via env(safe-area-inset-*) (viewport-fit=cover).
+            insetsHandling: 'native',
+        },
+    },
 };
 
 export default config;

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand primary-600 (sama dengan tailwind.config.js Laravel) -->
+    <color name="splash_background">#059669</color>
+</resources>

@@ -11,6 +11,7 @@
         "sync:dev": "npm run build:dev && cross-env MINDFORA_ENV=development cap sync android",
         "apk:debug": "npm run sync && cd android && gradlew.bat assembleDebug",
         "apk:debug:dev": "npm run sync:dev && cd android && gradlew.bat assembleDebug",
+        "assets": "node scripts/generate-assets.mjs",
         "open": "cap open android"
     },
     "engines": {
@@ -18,13 +19,17 @@
     },
     "dependencies": {
         "@capacitor/android": "8.5.3",
-        "@capacitor/core": "8.5.3"
+        "@capacitor/app": "8.1.2",
+        "@capacitor/core": "8.5.3",
+        "@capacitor/haptics": "8.0.2",
+        "@capacitor/splash-screen": "8.0.2"
     },
     "devDependencies": {
         "@capacitor/cli": "8.5.3",
         "autoprefixer": "10.4.22",
         "cross-env": "10.1.0",
         "postcss": "8.5.6",
+        "sharp": "0.35.5",
         "tailwindcss": "3.4.18",
         "typescript": "5.9.3",
         "vite": "7.2.6"

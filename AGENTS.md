@@ -89,12 +89,37 @@ Folder `android/` di-generate oleh `npx cap add android`, tapi DI-COMMIT. Setiap
 
 | File | Perubahan | Alasan |
 |------|-----------|--------|
-| _(belum ada)_ | | |
+| `app/src/main/java/id/mindfora/app/MainActivity.java` | `EdgeToEdge.enable(this)` sebelum `super.onCreate` | Layout edge-to-edge konsisten di semua versi Android; web mengatur inset via `env(safe-area-inset-*)` |
+| `app/src/main/res/values/styles.xml` | `windowSplashScreenBackground` + `windowSplashScreenAnimatedIcon` di `AppTheme.NoActionBarLaunch` | Splash Android 12+ bertema brand |
+| `app/src/main/res/values/colors.xml`, `values-night/colors.xml` | Warna `splash_background` (primary-600 / primary-950) | Splash terang & gelap |
+| `app/src/main/res/drawable/*`, `mipmap-*/*` | **GENERATED** oleh `npm run assets` — jangan edit manual | Ikon adaptif + themed icon, splash, PNG legacy |
+| _(dihapus)_ `drawable-v24/`, `drawable-land-*/`, `drawable-port-*/`, `mipmap-*/ic_launcher_foreground.png`, `values/ic_launcher_background.xml` | Aset default Capacitor | Diganti aset brand hasil generator |
 
-## 9. Status Fase (lihat SKILL.md)
+## 9. Aset Brand (ikon & splash)
 
-- [x] Fase 0 — Prasyarat & scaffolding (build APK sukses; uji di HP fisik: online + mode pesawat -> offline page)
-- [ ] Fase 1 — Native shell & UX dasar (+ perubahan Laravel: deteksi app, safe-area)
+Sumber tunggal: path logo lotus + warna brand di `scripts/generate-assets.mjs` (sama dengan `public/favicon.svg` & `tailwind.config.js` Laravel).
+```powershell
+npm run assets   # tulis ulang ikon adaptif/monochrome, splash, PNG legacy, assets/play-store-icon.png, src/logo.svg
+npm run apk:debug
+```
+
+## 10. Integrasi Laravel (repo `mindfora`)
+
+| Bagian | Lokasi | Fungsi |
+|--------|--------|--------|
+| Deteksi app | `app/helpers.php` -> `is_native_app()` | UA berisi `MindforaApp/`. SATU-SATUNYA tempat cek UA |
+| Bridge JS | `resources/js/native-bridge.js` | Warna ikon system bar ikut dark mode, tombol back (tutup modal/sidebar -> history -> minimize), pull-to-refresh, haptic `[data-haptic]` |
+| Safe-area | `resources/css/app.css` (`pt-safe`, `pb-safe`, `mt-safe`, `.native-app .app-main`) | Navbar, sidebar, toast, auth shell tidak tertutup status/gesture bar |
+| Bottom nav | `App\Livewire\Layout\BottomNav` + `livewire/layout/bottom-nav.blade.php` | Tab bar khas app (< lg), item dari `HasMenuItems` (maks 4 + "Lainnya" = buka sidebar) |
+| Root `/` | `routes/web.php` | Di app langsung ke login/dashboard (landing page hanya untuk browser) |
+| Test | `tests/Feature/NativeAppTest.php` | Redirect root, class native-app, bottom nav hanya di app |
+
+**PENTING:** perubahan sisi Laravel baru terlihat di app setelah di-deploy ke server `MINDFORA_URL` (`git pull` + `npm run build` di server). APK cukup di-build ulang kalau yang berubah ada di repo ini.
+
+## 11. Status Fase (lihat SKILL.md)
+
+- [x] Fase 0 — Prasyarat & scaffolding (diuji di HP: online + offline page OK)
+- [x] Fase 1 — Native shell & UX dasar (ikon/splash brand, edge-to-edge, system bars, back button, pull-to-refresh, haptic, bottom nav) — tunggu uji HP setelah deploy Laravel
 - [ ] Fase 2 — Upload & download file
 - [ ] Fase 3 — Push notification (FCM)
 - [ ] Fase 4 — Polish & QA

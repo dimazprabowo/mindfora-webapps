@@ -33,11 +33,13 @@ description: Workflow agent untuk membangun & memelihara aplikasi Android (Capac
 - DoD: `npx cap sync android` + `cd android; .\gradlew assembleDebug` sukses, APK membuka web Mindfora di emulator/HP.
 
 ### Fase 1 — Native Shell & UX Dasar
-- Splash screen (Android 12+ SplashScreen API via `@capacitor/splash-screen`) + adaptive icon (generate dengan `@capacitor/assets` dari logo Mindfora).
+- Splash screen (Android 12+ SplashScreen API via `@capacitor/splash-screen`) + adaptive icon. Aset digenerate oleh `npm run assets` (`scripts/generate-assets.mjs`, sumber tunggal logo + warna) — `@capacitor/assets` TIDAK dipakai (masih bergantung ke CLI v5 & sharp lama).
+- Status/navigation bar: plugin `SystemBars` bawaan `@capacitor/core` (JANGAN pasang `@capacitor/status-bar`). `insetsHandling: 'native'` + `EdgeToEdge.enable()` di MainActivity; web pakai `env(safe-area-inset-*)`.
 - `offline.html` (desain brand, ilustrasi, tombol "Coba lagi", auto-retry saat koneksi kembali).
 - Tombol back Android: `history.back()`; di halaman root -> "Tekan sekali lagi untuk keluar".
 - Link eksternal (`wa.me`, `mailto:`, `tel:`, domain lain di luar allowNavigation) dibuka di app/browser eksternal.
-- Status bar/navigation bar sinkron dengan dark mode (Alpine store `darkMode` -> native-bridge -> StatusBar plugin).
+- Status bar/navigation bar sinkron dengan dark mode (class `dark` di `<html>` -> native-bridge -> `SystemBars.setStyle`). Halaman auth mobile (gradien hijau) ditandai `data-system-bars="dark"` di `<body>` guest layout.
+- Bottom navigation khas app (`App\Livewire\Layout\BottomNav`, data dari `HasMenuItems`, hanya render bila `is_native_app()`).
 - Pull-to-refresh (aktif cuma saat scroll di posisi paling atas; jangan bentrok dengan container `.custom-scrollbar`).
 - Sisi Laravel: helper `is_native_app()`, `viewport-fit=cover` + safe-area, sembunyikan elemen yang tidak relevan di app (mis. CTA "download app" di landing).
 - DoD: semua alur di atas lolos di HP fisik light & dark mode.
